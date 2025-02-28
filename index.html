@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enrgfox Search</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    * {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background-color: #36393f;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column; /* Added to center header and group vertically */
+    }
+
+    .group {
+        display: flex;
+        line-height: 28px;
+        align-items: center;
+        position: relative;
+        max-width: 500px;  /* Increased width */
+        width: 90%;
+    }
+
+    .input {
+        font-family: "Montserrat", sans-serif;
+        width: 100%;
+        height: 45px;
+        padding-left: 2.5rem;
+        box-shadow: 0 0 0 1.5px #202225;
+        border: 0;
+        border-radius: 4px;  /* Discord style border radius */
+        background-color: #202225;  /* Discord's input background */
+        outline: none;
+        color: #dcddde;  /* Discord's text color */
+        transition: all 0.25s cubic-bezier(0.19, 1, 0.22, 1);
+        cursor: text;
+        z-index: 0;
+    }
+
+    .input::placeholder {
+        color: #72767d;  /* Discord's placeholder color */
+    }
+
+    .input:hover {
+        box-shadow: 0 0 0 1px #040405;
+    }
+
+    .input:focus {
+        background-color: #040405;
+        box-shadow: 0 0 0 1px #00b0f4;  /* Discord's focus color */
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        fill: #72767d;
+        width: 1rem;
+        height: 1rem;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #dcddde;
+    }
+
+    .header i {
+        font-size: 2.5rem;
+        color: #00b0f4;
+        margin-bottom: 1rem;
+    }
+
+    .header h1 {
+        font-family: "Montserrat", sans-serif;
+        font-size: 1.8rem;
+        margin: 0;
+    }
+
+    .loader-container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-top: 2rem;
+    }
+
+    #wifi-loader {
+  --background: #62abff;
+  --front-color: #4f29f0;
+  --back-color: #c3c8de;
+  --text-color: #414856;
+  width: 64px;
+  height: 64px;
+  border-radius: 50px;
+  position: relative;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#wifi-loader svg {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#wifi-loader svg circle {
+  position: absolute;
+  fill: none;
+  stroke-width: 6px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-100deg);
+  transform-origin: center;
+}
+
+#wifi-loader svg circle.back {
+  stroke: var(--back-color);
+}
+
+#wifi-loader svg circle.front {
+  stroke: var(--front-color);
+}
+
+#wifi-loader svg.circle-outer {
+  height: 86px;
+  width: 86px;
+}
+
+#wifi-loader svg.circle-outer circle {
+  stroke-dasharray: 62.75 188.25;
+}
+
+#wifi-loader svg.circle-outer circle.back {
+  animation: circle-outer135 1.8s ease infinite 0.3s;
+}
+
+#wifi-loader svg.circle-outer circle.front {
+  animation: circle-outer135 1.8s ease infinite 0.15s;
+}
+
+#wifi-loader svg.circle-middle {
+  height: 60px;
+  width: 60px;
+}
+
+#wifi-loader svg.circle-middle circle {
+  stroke-dasharray: 42.5 127.5;
+}
+
+#wifi-loader svg.circle-middle circle.back {
+  animation: circle-middle6123 1.8s ease infinite 0.25s;
+}
+
+#wifi-loader svg.circle-middle circle.front {
+  animation: circle-middle6123 1.8s ease infinite 0.1s;
+}
+
+#wifi-loader svg.circle-inner {
+  height: 34px;
+  width: 34px;
+}
+
+#wifi-loader svg.circle-inner circle {
+  stroke-dasharray: 22 66;
+}
+
+#wifi-loader svg.circle-inner circle.back {
+  animation: circle-inner162 1.8s ease infinite 0.2s;
+}
+
+#wifi-loader svg.circle-inner circle.front {
+  animation: circle-inner162 1.8s ease infinite 0.05s;
+}
+
+#wifi-loader .text {
+  position: absolute;
+  bottom: -40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: lowercase;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+
+#wifi-loader .text::before, #wifi-loader .text::after {
+  content: attr(data-text);
+  font-family: "Montserrat", sans-serif;
+}
+
+#wifi-loader .text::before {
+  color: var(--text-color);
+  font-family: "Montserrat", sans-serif;
+}
+
+#wifi-loader .text::after {
+  color: var(--front-color);
+  animation: text-animation76 3.6s ease infinite;
+  position: absolute;
+  left: 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+@keyframes circle-outer135 {
+  0% {
+    stroke-dashoffset: 25;
+  }
+
+  25% {
+    stroke-dashoffset: 0;
+  }
+
+  65% {
+    stroke-dashoffset: 301;
+  }
+
+  80% {
+    stroke-dashoffset: 276;
+  }
+
+  100% {
+    stroke-dashoffset: 276;
+  }
+}
+
+@keyframes circle-middle6123 {
+  0% {
+    stroke-dashoffset: 17;
+  }
+
+  25% {
+    stroke-dashoffset: 0;
+  }
+
+  65% {
+    stroke-dashoffset: 204;
+  }
+
+  80% {
+    stroke-dashoffset: 187;
+  }
+
+  100% {
+    stroke-dashoffset: 187;
+  }
+}
+
+@keyframes circle-inner162 {
+  0% {
+    stroke-dashoffset: 9;
+  }
+
+  25% {
+    stroke-dashoffset: 0;
+  }
+
+  65% {
+    stroke-dashoffset: 106;
+  }
+
+  80% {
+    stroke-dashoffset: 97;
+  }
+
+  100% {
+    stroke-dashoffset: 97;
+  }
+}
+
+@keyframes text-animation76 {
+  0% {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  50% {
+    clip-path: inset(0);
+  }
+
+  100% {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+ 
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 320px;
+  border-radius: 24px;
+  line-height: 1.6;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 36px;
+  border-radius: 22px;
+  color: #ffffff;
+  overflow: hidden;
+  background: #0a3cff;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.content::before {
+  position: absolute;
+  content: "";
+  top: -4%;
+  left: 50%;
+  width: 90%;
+  height: 90%;
+  transform: translate(-50%);
+  background: #ced8ff;
+  z-index: -1;
+  transform-origin: bottom;
+
+  border-radius: inherit;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.content::after {
+  position: absolute;
+  content: "";
+  top: -8%;
+  left: 50%;
+  width: 80%;
+  height: 80%;
+  transform: translate(-50%);
+  background: #e7ecff;
+  z-index: -2;
+  transform-origin: bottom;
+  border-radius: inherit;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.content svg {
+  width: 48px;
+  height: 48px;
+}
+
+.content .para {
+  z-index: 1;
+  opacity: 1;
+  font-size: 18px;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.content .link {
+  z-index: 1;
+  color: #fea000;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 16px;
+  transition: all 0.48s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.content .link:hover {
+  text-decoration: underline;
+}
+
+.card:hover {
+  transform: translate(0px, -16px);
+}
+
+.card:hover .content::before {
+  rotate: -8deg;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.card:hover .content::after {
+  rotate: 8deg;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#results-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: opacity 0.3s ease;
+    opacity: 1;
+}
+
+.result-card {
+    background: #2f3136;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.result-card:hover {
+    transform: translateY(-2px);
+    background: #36393f;
+}
+
+.result-title {
+    color: #00b0f4;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+    display: block;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.result-title:hover {
+    color: #1a9eff;
+}
+
+.result-domain {
+    color: #72767d;
+    font-size: 0.9rem;
+}
+
+.result-description {
+    color: #dcddde;
+    margin: 0.8rem 0;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.result-date {
+    color: #72767d;
+    font-size: 0.8rem;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<div class="header">
+    <img src="assets/favicon.png" alt="Enrgfox" width="200" height="200">
+    <h1>Enrgfox Search</h1>
+</div>
+
+<div class="group">
+    <svg viewBox="0 0 24 24" aria-hidden="true" class="search-icon">
+        <g>
+            <path d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"></path>
+        </g>
+    </svg>
+    <input
+        id="query"
+        class="input"
+        type="search"
+        placeholder="Search..."
+        name="searchbar"
+    />
+</div>
+
+<div class="loader-container">
+    <div id="wifi-loader">
+        <svg viewBox="0 0 86 86" class="circle-outer">
+          <circle r="40" cy="43" cx="43" class="back"></circle>
+          <circle r="40" cy="43" cx="43" class="front"></circle>
+          <circle r="40" cy="43" cx="43" class="new"></circle>
+        </svg>
+        <svg viewBox="0 0 60 60" class="circle-middle">
+          <circle r="27" cy="30" cx="30" class="back"></circle>
+          <circle r="27" cy="30" cx="30" class="front"></circle>
+        </svg>
+        <svg viewBox="0 0 34 34" class="circle-inner">
+          <circle r="14" cy="17" cx="17" class="back"></circle>
+          <circle r="14" cy="17" cx="17" class="front"></circle>
+        </svg>
+        <div data-text="Searching" class="text"></div>
+      </div>
+</div>
+
+<div id="results-container"></div>
+<script>
+    // Update loader reference in JavaScript
+    const loader = document.getElementById('wifi-loader');
+    
+    function toggleLoader(show) {
+        const container = document.getElementById('results-container');
+        loader.style.display = show ? 'flex' : 'none';
+        
+        if (show) {
+            // Hide results when showing loader
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.style.display = 'none';
+                container.innerHTML = '';
+            }, 300); // Match transition duration
+        } else {
+            // Show results when hiding loader
+            container.style.display = 'flex';
+            setTimeout(() => {
+                container.style.opacity = '1';
+            }, 50);
+        }
+    }
+
+    // Get DOM elements
+    const searchInput = document.getElementById('query');
+
+    // Initially hide the loader
+    loader.style.display = 'none';
+
+    // Add capitalizeFirstLetter helper function
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    // Function to truncate long URLs
+    function truncateUrl(url) {
+        if (url.startsWith('https://')) {
+            const maxLength = 50; // Max length of the URL to display
+            return url.length > maxLength ? url.slice(0, maxLength) + '...' : url;
+        }
+        return '';
+    }
+
+    // Helper function to get publication date from URL (uses regex to find date in URL or meta tag)
+    async function getPublicationDate(url) {
+        try {
+            const response = await fetch(url);
+            const text = await response.text();
+            const dateMetaMatch = text.match(/<meta\s+(?:name|property)="(?:publishdate|date|article:published_time|og:article:published_time)"\s+content="([^"]+)"/);
+            if (dateMetaMatch) {
+                return dateMetaMatch[1].split('T')[0];
+            }
+        } catch (error) {
+            console.error("Error fetching publication date: ", error);
+        }
+        return new Date().toISOString().split('T')[0]; // Default to current date
+    }
+
+    // Function to scrape DuckDuckGo search results
+    async function scrapeDuckDuckGo(query) {
+        const encodedQuery = encodeURIComponent(query);
+        const url = `https://html.duckduckgo.com/html/?q=${encodedQuery}`;
+        let results = [];
+        try {
+            for (let page = 1; results.length < 10 && page <= 3; page++) {
+                const pageUrl = `${url}&s=${30 * (page - 1)}`;
+                const response = await fetch(pageUrl);
+                const text = await response.text();
+                const doc = new DOMParser().parseFromString(text, 'text/html');
+                
+                const resultElems = doc.querySelectorAll('.result');
+                for (const result of resultElems) {
+                    if (results.length >= 10) break;
+
+                    const titleElem = result.querySelector('.result__title');
+                    const snippetElem = result.querySelector('.result__snippet');
+                    const linkElem = result.querySelector('.result__url');
+
+                    if (titleElem && linkElem) {
+                        const url = linkElem.href;
+                        const description = snippetElem ? snippetElem.textContent.trim() : "No description available";
+                        const datePublished = await getPublicationDate(url);
+
+                        results.push({
+                            title: titleElem.textContent.trim(),
+                            description,
+                            content: description,
+                            url,
+                            date_published: datePublished,
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error scraping DuckDuckGo:", error);
+        }
+        return results.slice(0, 10);
+    }
+
+    // Function to render search results
+    function renderResults(data) {
+        const container = document.getElementById('results-container');
+        container.innerHTML = '';
+
+        data.forEach((result, index) => {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.style.animationDelay = `${index * 0.1}s`;
+            
+            const date = new Date(result.date_published).toLocaleDateString();
+            
+            card.innerHTML = `
+                <a href="${result.url}" class="result-title" target="_blank">${capitalizeFirstLetter(result.title)}</a>
+                <div class="result-domain">${truncateUrl(result.url)}</div>
+                <div class="result-description">${result.content}</div>
+                <div class="result-date">${date}</div>
+            `;
+            
+            container.appendChild(card);
+        });
+    }
+
+    // Add event listener for Enter key
+    searchInput.addEventListener('keypress', async function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            toggleLoader(true);
+            
+            try {
+                const results = await scrapeDuckDuckGo(searchInput.value);
+                renderResults(results);
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                toggleLoader(false);
+            }
+        }
+    });
+</script>
