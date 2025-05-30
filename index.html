@@ -558,7 +558,7 @@
     // Function to scrape DuckDuckGo search results
     async function scrapeDuckDuckGo(query) {
         const encodedQuery = encodeURIComponent(query);
-        const url = `https://html.duckduckgo.com/html/?q=${encodedQuery}`;
+        const url = `https://corsproxy.io/?url=https://html.duckduckgo.com/html/?q=${encodedQuery}`;
         let results = [];
         try {
             for (let page = 1; results.length < 10 && page <= 3; page++) {
